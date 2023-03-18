@@ -1,12 +1,37 @@
 import useSWR from 'swr';
 import Link from 'next/link';
-import { Card } from 'react-bootstrap';
+import { Card, Button } from 'react-bootstrap';
 import Error from 'next/error';
+import { useAtom } from 'jotai';
+import { favouritesAtom } from '../store';
+import React, { useState } from 'react';
+
 
 export default function ArtworkCardDetail({ objectID }) {
     const { data, error } = useSWR(
-        `https://collectionapi.metmuseum.org/public/collection/v1/objects/${objectID}`
+        objectID ? `https://collectionapi.metmuseum.org/public/collection/v1/objects/${objectID}` : null
     );
+
+    const [favouritesList, setFavouritesList] = useAtom(favouritesAtom);
+
+    const [showAdded, setShowAdded] = useState(favouritesList.some(fav => fav.objectID === objectID));
+
+    function favouritesClicked() {
+        const artwork = {
+            objectID,
+            title: data.title || 'N/A',
+            primaryImage: data.primaryImage,
+            artistDisplayName: data.artistDisplayName,
+            artistWikidata_URL: data.artistWikidata_URL
+        };
+        if (showAdded) {
+            setFavouritesList(current => current.filter(fav => fav.objectID !== objectID));
+            setShowAdded(false);
+        } else {
+            setFavouritesList(current => [...current, artwork]);
+            setShowAdded(true);
+        }
+    }
 
     if (error) {
         return <Error statusCode={404} />;
@@ -54,6 +79,14 @@ export default function ArtworkCardDetail({ objectID }) {
                     <br />
                     Dimensions: {dimensions || 'N/A'}
                 </Card.Text>
+                <div style={{ marginBottom: '10px' }}>
+                    <Button
+                        variant={showAdded ? 'primary' : 'outline-primary'}
+                        onClick={favouritesClicked}
+                    >
+                        {showAdded ? '+ Favourite (added)' : '+ Favourite'}
+                    </Button>
+                </div>
                 <Link href={`/artwork/${objectID}`} passHref>
                     <Card.Link>View Artwork {objectID}</Card.Link>
                 </Link>

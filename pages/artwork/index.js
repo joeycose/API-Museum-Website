@@ -4,6 +4,7 @@ import useSWR from 'swr';
 import { Row, Col, Pagination, Card } from 'react-bootstrap';
 import ArtworkCard from '../../components/ArtworkCard';
 import Error from 'next/error';
+import validObjectIDList from '@/public/data/validObjectIDList.json';
 
 const PER_PAGE = 12;
 
@@ -17,6 +18,23 @@ const Artwork = () => {
         `https://collectionapi.metmuseum.org/public/collection/v1/search?${finalQuery}`
     );
 
+    useEffect(() => {
+        if (data) {
+            let filteredResults = validObjectIDList.objectIDs.filter(x =>
+                data.objectIDs?.includes(x)
+            );
+
+            const results = [];
+            for (let i = 0; i < filteredResults.length; i += PER_PAGE) {
+                const chunk = filteredResults.slice(i, i + PER_PAGE);
+                results.push(chunk);
+            }
+
+            setArtworkList(results);
+            setPage(1);
+        }
+    }, [data]);
+
     const previousPage = () => {
         if (page > 1) {
             setPage(page - 1);
@@ -28,18 +46,6 @@ const Artwork = () => {
             setPage(page + 1);
         }
     };
-
-    useEffect(() => {
-        if (data) {
-            const results = [];
-            for (let i = 0; i < data?.objectIDs?.length; i += PER_PAGE) {
-                const chunk = data?.objectIDs.slice(i, i + PER_PAGE);
-                results.push(chunk);
-            }
-            setArtworkList(results);
-            setPage(1);
-        }
-    }, [data]);
 
     if (error) {
         return <Error statusCode={404} />;
@@ -53,7 +59,7 @@ const Artwork = () => {
         <>
             {artworkList.length > 0 ? (
                 <Row className="gy-4">
-                    {artworkList[page - 1].map((currentObjectID) => (
+                    {artworkList[page - 1].map(currentObjectID => (
                         <Col lg={3} key={currentObjectID}>
                             <ArtworkCard objectID={currentObjectID} />
                         </Col>

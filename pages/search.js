@@ -10,18 +10,43 @@ export default function AdvancedSearch() {
         formState: { errors },
     } = useForm();
 
-    const submitForm = (data) => {
-        let queryString = 'searchBy=true';
-        if (data.geoLocation) {
-            queryString += `&geoLocation=${encodeURIComponent(data.geoLocation)}`;
-        }
-        if (data.medium) {
-            queryString += `&medium=${encodeURIComponent(data.medium)}`;
-        }
-        queryString += `&isOnView=${data.isOnView}&isHighlight=${data.isHighlight}`;
-        queryString += `&q=${encodeURIComponent(data.q)}`;
 
-        router.push(`/artwork?${queryString}`);
+    // const submitForm = (data) => {
+    //     try {
+    //         let queryString = "searchBy=true";
+    //         if (data.geoLocation) {
+    //             queryString += `&geoLocation=${encodeURIComponent(data.geoLocation)}`;
+    //         }
+    //         if (data.medium) {
+    //             queryString += `&medium=${encodeURIComponent(data.medium)}`;
+    //         }
+    //         queryString += `&isOnView=${data.isOnView}&isHighlight=${data.isHighlight}`;
+    //         queryString += `&q=${encodeURIComponent(data.q)}`;
+
+    //         router.push(`/artwork?${queryString}`);
+    //     } catch (error) {
+    //         // handle the error here
+    //         console.error(error);
+    //     }
+    // };
+
+
+    const submitForm = (data) => {
+        try {
+            let queryString = 'searchBy=true';
+            if (data.geoLocation) {
+                queryString += `&geoLocation=${encodeURIComponent(data.geoLocation)}`;
+            }
+            if (data.medium) {
+                queryString += `&medium=${encodeURIComponent(data.medium)}`;
+            }
+            queryString += `&isOnView=${data.isOnView}&isHighlight=${data.isHighlight}`;
+            queryString += `&q=${encodeURIComponent(data.q)}`;
+
+            router.push(`/artwork?${queryString}`);
+        } catch (error) {
+            console.log(error)
+        }
     };
 
     return (
