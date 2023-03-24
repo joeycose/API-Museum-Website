@@ -47,10 +47,10 @@ function MainNav() {
                             style={{ maxHeight: '100px' }}
                             navbarScroll
                         >
-                            <Nav.Link href="/" onClick={handleLinkClick}>
+                            <Nav.Link href="/" active={router.pathname === '/'} onClick={handleLinkClick}>
                                 Home
                             </Nav.Link>
-                            <Nav.Link href="/search" onClick={handleLinkClick}>
+                            <Nav.Link href="/search" active={router.pathname === '/search'} onClick={handleLinkClick}>
                                 Advanced Search
                             </Nav.Link>
                         </Nav>
@@ -72,7 +72,10 @@ function MainNav() {
                         <Nav>
                             <NavDropdown title="User Name">
                                 <a href="/favourites" onClick={handleLinkClick}>Favourites</a>
+                                <NavDropdown.Divider />
+                                <a href="/history" onClick={handleLinkClick}>Search History</a>
                             </NavDropdown>
+
                         </Nav>
                     </Navbar.Collapse>
                 </Container>

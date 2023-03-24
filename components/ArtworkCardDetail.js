@@ -4,8 +4,7 @@ import { Card, Button } from 'react-bootstrap';
 import Error from 'next/error';
 import { useAtom } from 'jotai';
 import { favouritesAtom } from '../store';
-import React, { useState } from 'react';
-
+import React, { useState, useEffect } from 'react';
 
 export default function ArtworkCardDetail({ objectID }) {
     const { data, error } = useSWR(
@@ -13,8 +12,11 @@ export default function ArtworkCardDetail({ objectID }) {
     );
 
     const [favouritesList, setFavouritesList] = useAtom(favouritesAtom);
+    const [showAdded, setShowAdded] = useState(false);
 
-    const [showAdded, setShowAdded] = useState(favouritesList.some(fav => fav.objectID === objectID));
+    useEffect(() => {
+        setShowAdded(favouritesList.some((fav) => fav.objectID === objectID));
+    }, [favouritesList]);
 
     function favouritesClicked() {
         const artwork = {
@@ -25,11 +27,11 @@ export default function ArtworkCardDetail({ objectID }) {
             artistWikidata_URL: data.artistWikidata_URL
         };
         if (showAdded) {
-            setFavouritesList(current => current.filter(fav => fav.objectID !== objectID));
-            setShowAdded(false);
+            setFavouritesList((current) =>
+                current.filter((fav) => fav.objectID !== objectID)
+            );
         } else {
-            setFavouritesList(current => [...current, artwork]);
-            setShowAdded(true);
+            setFavouritesList((current) => [...current, artwork]);
         }
     }
 
@@ -50,7 +52,7 @@ export default function ArtworkCardDetail({ objectID }) {
         artistDisplayName,
         artistWikidata_URL,
         creditLine,
-        dimensions,
+        dimensions
     } = data;
 
     return (
