@@ -16,7 +16,8 @@ function MainNav() {
     const handleSubmit = (event) => {
         event.preventDefault();
         setIsExpanded(false);
-        router.push(`/artwork?title=true&q=${searchField}`);
+        const queryString = `title=true&q=${searchField}`;
+        router.push(`/artwork?${queryString}`);
     };
 
     const handleToggle = () => {
