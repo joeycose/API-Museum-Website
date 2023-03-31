@@ -1,22 +1,20 @@
-import useSWR from 'swr';
-import Link from 'next/link';
-import { Card, Button } from 'react-bootstrap';
-import Error from 'next/error';
-import { useAtom } from 'jotai';
-import { favouritesAtom } from '../store';
-import React, { useState, useEffect } from 'react';
-
-export default function ArtworkCardDetail({ objectID }) {
+export default function ArtworkCardDetail({ artwork, onFavouriteToggle, isFavourited }) {
+    const objectID = artwork.objectID;
     const { data, error } = useSWR(
         objectID ? `https://collectionapi.metmuseum.org/public/collection/v1/objects/${objectID}` : null
     );
 
-    const [favouritesList, setFavouritesList] = useAtom(favouritesAtom);
-    const [showAdded, setShowAdded] = useState(false);
+    const [showAdded, setShowAdded] = useState(isFavourited);
 
     useEffect(() => {
-        setShowAdded(favouritesList.some((fav) => fav.objectID === objectID));
-    }, [favouritesList]);
+        setShowAdded(isFavourited);
+    }, [isFavourited]);
+
+    useEffect(() => {
+        if (data) {
+            setShowAdded(favouritesList.some((fav) => fav.objectID === objectID));
+        }
+    }, [favouritesList, data, objectID]);
 
     function favouritesClicked() {
         const artwork = {
@@ -26,13 +24,8 @@ export default function ArtworkCardDetail({ objectID }) {
             artistDisplayName: data.artistDisplayName,
             artistWikidata_URL: data.artistWikidata_URL
         };
-        if (showAdded) {
-            setFavouritesList((current) =>
-                current.filter((fav) => fav.objectID !== objectID)
-            );
-        } else {
-            setFavouritesList((current) => [...current, artwork]);
-        }
+        onFavouriteToggle(objectID);
+        setShowAdded(!showAdded);
     }
 
     if (error) {
@@ -85,8 +78,10 @@ export default function ArtworkCardDetail({ objectID }) {
                     <Button
                         variant={showAdded ? 'primary' : 'outline-primary'}
                         onClick={favouritesClicked}
+                        className="favourite-btn"
+                        data-artwork-id={objectID}
                     >
-                        {showAdded ? '+ Favourite (added)' : '+ Favourite'}
+                        {showAdded ? '+ Favorite (added)' : '+ Favorite'}
                     </Button>
                 </div>
                 <Link href={`/artwork/${objectID}`} passHref>
