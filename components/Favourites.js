@@ -13,11 +13,13 @@ export default function Favourites() {
             const newFavouritesList = parsedFavouritesList.filter(
                 (fav) => !favouritesList.some((f) => f.objectID === fav.objectID)
             );
-            setFavouritesList([...favouritesList, ...newFavouritesList]);
+            if (newFavouritesList.length > 0) {
+                setFavouritesList([...favouritesList, ...newFavouritesList]);
+            }
         }
     }, [favouritesList, setFavouritesList]);
 
-    useEffect(() => { // new useEffect hook to update localStorage
+    useEffect(() => {
         localStorage.setItem('favouritesList', JSON.stringify(favouritesList));
     }, [favouritesList]);
 
